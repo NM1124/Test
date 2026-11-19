@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pythagoreische Tripel – Muster entdecken und begründen</title>
+<style>
+:root{
+ --navy:#20364b;--ink:#263746;--muted:#607486;--line:#d9e2e8;
+ --teal:#167c80;--teal-pale:#eaf5f4;--gold:#d99a32;--gold-pale:#fff5e3;
+ --paper:#fff;--bg:#f3f6f8;--shadow:0 8px 24px rgba(32,54,75,.06)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1050px;margin:28px auto;padding:0 22px 42px}
+header{background:var(--navy);color:white;border-radius:18px;padding:20px 28px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+h1{font-size:clamp(26px,4vw,37px);line-height:1.15;margin:0}
+h1 span{display:block;font-size:.55em;font-weight:600;color:#cfe3e8;margin-top:6px}
+.hero-art{flex:0 0 auto;width:250px}
+.hero-art svg{width:100%;height:auto;display:block}
+.phase{background:var(--paper);border:1px solid var(--line);border-radius:16px;margin:16px 0;overflow:hidden;box-shadow:var(--shadow)}
+.phasebar{display:flex;align-items:center;gap:12px;padding:13px 20px}
+.phase1 .phasebar{background:var(--teal);color:white}
+.phase2 .phasebar{background:var(--gold);color:var(--navy)}
+.phasebar.grey{background:#e8eef2;color:var(--navy)}
+.phase-no{font-size:11px;font-weight:850;letter-spacing:.1em;border:1px solid currentColor;border-radius:6px;padding:4px 7px;white-space:nowrap;flex:none}
+@media(max-width:520px){.phasebar{flex-wrap:wrap;row-gap:4px}.phasebar .date{margin-left:0;flex-basis:100%}}
+.phasebar h2{font-size:18px;margin:0}
+.phasebar .date{margin-left:auto;font-size:13px;font-weight:700;opacity:.85;white-space:nowrap}
+.content{padding:20px 22px 22px}
+.mainprompt{font-size:clamp(18px,2.4vw,21px);font-weight:750;line-height:1.35;margin:0 0 6px}
+.supporting{color:var(--muted);margin:0 0 6px;max-width:850px}
+.tag{display:inline-block;font-size:12px;font-weight:750;letter-spacing:.04em;border-radius:6px;padding:5px 9px}
+.tag.teal{background:var(--teal-pale);color:var(--teal)}
+.auftrag{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--navy);border-radius:16px;padding:18px 22px;margin:0 0 16px;box-shadow:var(--shadow)}
+.auftrag .tag{background:#e8eef2;color:var(--navy)}
+.auftrag ol{margin:10px 0 0;padding-left:22px}
+.auftrag li{margin:6px 0;font-size:17px}
+.ziel{margin:10px 0 4px;font-size:18px;line-height:1.45}
+.wichtig{margin-top:14px;background:var(--gold-pale);border:1px solid #f0d9ae;border-left:5px solid var(--gold);border-radius:12px;padding:12px 15px}
+.wichtig p{margin:2px 0}
+.wichtig strong{color:#7a5310}
+.tool{margin-top:16px;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:#f8fbff;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.tool .txt{flex:1 1 240px}
+.tool h3{margin:6px 0;font-size:17px}
+.tool p{margin:0}
+.tool img{width:150px;height:150px;object-fit:contain;background:white;padding:5px;border-radius:8px;image-rendering:pixelated}
+.btn{border:0;border-radius:10px;padding:12px 18px;background:var(--navy);color:#fff;font:inherit;font-weight:750;cursor:pointer}
+.btn:hover{background:#2c4a66}
+.btn:disabled{opacity:.5;cursor:default}
+.block{padding:12px 0;border-bottom:1px solid var(--line)}
+.block:last-of-type{border-bottom:0}
+.block h3{margin:0 0 4px;font-size:17px;color:var(--navy)}
+.block p{margin:2px 0}
+.start{margin:14px 0;padding:12px 16px;border:1px solid var(--line);border-left:5px solid #2f8f8b;border-radius:12px;background:#f2faf9}
+.start p{margin:0 0 4px}.start ol{margin:4px 0 0;padding-left:22px}.start li{margin:3px 0}
+.note{color:var(--muted);font-size:14px;margin:12px 0 0}
+.endnote{margin-top:17px;background:var(--navy);color:white;border-radius:12px;padding:14px 17px}
+.endnote strong{color:#b9dad8}
+.endnote p{margin:3px 0 0}
+.tabs{display:flex;gap:8px;margin:0 0 18px;padding:5px;background:#e7edf1;border:1px solid var(--line);border-radius:13px}
+.tab{flex:1;border:0;border-radius:9px;padding:12px 16px;background:transparent;color:var(--muted);font:inherit;font-weight:800;cursor:pointer}
+.tab{display:block;text-align:center}
+.tab-radio{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+#t-forschen:checked~.tabs label[for="t-forschen"],#t-hilfen:checked~.tabs label[for="t-hilfen"]{background:white;color:var(--navy);box-shadow:0 2px 8px rgba(32,54,75,.10)}
+#t-forschen:focus-visible~.tabs label[for="t-forschen"],#t-hilfen:focus-visible~.tabs label[for="t-hilfen"]{outline:3px solid #9bbcff;outline-offset:2px}
+#t-forschen:checked~#forschen,#t-hilfen:checked~#hilfen{display:block}
+.tab-panel{display:none}
+.helpintro{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:0 0 4px}
+.helpintro p{margin:2px 0}
+details{border:1px solid var(--line);border-radius:10px;margin-top:12px;background:#fbfcfd}
+summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"＋";font-size:18px;color:var(--muted);font-weight:500}
+details[open]>summary:after{content:"−"}
+.detailbody{padding:0 14px 14px;color:#405364}
+.detailbody p{margin:4px 0 8px}
+.detailbody ul{margin:6px 0 4px;padding-left:21px}
+details.step{background:#fff;margin:8px 0 0}
+details.step summary{padding:9px 12px;color:var(--teal);font-size:15px}
+details.step .detailbody{padding:0 12px 10px}
+.math{font-family:Georgia,"Times New Roman",serif;font-size:1.08em}
+.mathline{font-family:Georgia,"Times New Roman",serif;font-size:19px;text-align:center;margin:10px 0!important;color:var(--ink)}
+.groups{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:10px 0}
+.groups div{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.groups strong{display:block;color:var(--navy);margin-bottom:3px}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:15px;background:#fff}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:#edf2f6}
+.ausliegen{display:inline-block;background:var(--teal-pale);color:var(--teal);font-weight:700;font-size:14px;border-radius:6px;padding:3px 8px;margin:2px 0 6px}
+@media(max-width:700px){main{padding:0 13px 28px;margin:14px auto}.groups{grid-template-columns:1fr}header{padding:18px}.content{padding:17px}.hero-art{width:150px}}
+@media(max-width:480px){header{flex-direction:column;align-items:flex-start}.hero-art{width:200px;align-self:center}}
+@media(max-width:520px){.tab{padding:10px 8px;font-size:14px}}
+</style>
+</head>
+<body>
+<main>
+<input type="radio" name="dashtab" id="t-forschen" class="tab-radio" checked>
+<input type="radio" name="dashtab" id="t-hilfen" class="tab-radio">
+<header>
+ <h1>Pythagoreische Tripel<span>Muster entdecken und begründen</span></h1>
+ <div class="hero-art">
+  <svg viewBox="0 0 260 150" role="img" aria-label="Rechtwinkliges Dreieck mit den Katheten a und b und der Hypotenuse c; a, b und c sind natürliche Zahlen">
+   <path d="M30 128 L30 40 L215 128 Z" fill="rgba(255,255,255,.06)" stroke="#fff" stroke-width="3.5" stroke-linejoin="round"/>
+   <path d="M30 114 L44 114 L44 128" fill="none" stroke="#f5cf83" stroke-width="2.5"/>
+   <text x="13" y="90" fill="#fff" font-size="17" font-style="italic" font-family="Georgia,serif">a</text>
+   <text x="118" y="147" fill="#fff" font-size="17" font-style="italic" font-family="Georgia,serif">b</text>
+   <text x="126" y="76" fill="#f5cf83" font-size="17" font-style="italic" font-family="Georgia,serif">c</text>
+   <text x="150" y="30" fill="#fff" font-size="17" font-family="Georgia,serif"><tspan font-style="italic">a, b, c</tspan> ∈ ℕ</text>
+  </svg>
+ </div>
+</header>
+
+<nav class="tabs" aria-label="Dashboard-Bereiche">
+ <label class="tab" for="t-forschen">Forschen</label>
+ <label class="tab" for="t-hilfen">Hilfen</label>
+</nav>
+
+<!-- ================= FORSCHEN ================= -->
+<section id="forschen" class="tab-panel">
+
+<div class="auftrag">
+ <span class="tag">EUER FORSCHUNGSAUFTRAG</span>
+ <p class="ziel"><strong>Ziel:</strong> Findet heraus, wie man immer wieder neue Knoten-Seile knüpfen kann, mit denen sich ein rechter Winkel legen lässt.</p>
+ <ol>
+  <li>Findet weitere Tripel, sortiert sie nach Mustern und formuliert eine Vermutung.</li>
+  <li>Begründet, warum euer Muster immer wieder neue pythagoreische Tripel erzeugt.</li>
+ </ol>
+</div>
+
+<section class="phase phase1">
+ <div class="phasebar"><span class="phase-no">PHASE 1</span><h2>Entdecken und Vermuten</h2><span class="date">Freitag, 13.11.</span></div>
+ <div class="content">
+  <p class="mainprompt">Findet weitere pythagoreische Tripel und vergleicht sie.</p>
+  <p class="supporting">Formuliert eine Vermutung.<br>Haltet sie mit passenden Beispielen auf eurem Plakat fest (hochkant!).</p>
+  <div class="start">
+   <p><strong>So startet ihr:</strong></p>
+   <ol>
+    <li>Jede Person sucht allein in ihrem eigenen Suchbereich (A, B, C oder D).</li>
+    <li>Schreibt jedes Tripel auf ein eigenes Kärtchen.<br>Notiert die Zahlen der Größe nach: a &lt; b &lt; c.</li>
+    <li>Mindestens 2 Tripel, höchstens 3 Minuten.</li>
+    <li>Legt dann alle Kärtchen in die Mitte.<br>Sortiert sie nach verschiedenen Mustern.</li>
+   </ol>
+  </div>
+  <div class="wichtig">
+   <p><strong>Wichtig: Nicht alle Tripel folgen demselben Muster.</strong></p>
+   <p>Tripel, die nicht zu eurem Muster passen, sind kein Fehler – legt sie zur Seite und forscht mit einer Gruppe weiter.</p>
+  </div>
+
+  <div class="tool">
+   <div class="txt">
+    <span class="tag teal">Digital forschen</span>
+    <h3>Weitere Tripel mit GeoGebra finden</h3>
+    <p>Verstellt die Schieberegler.<br>So findet ihr schnell weitere Tripel.<br>Tippt auf den Button oder scannt den QR-Code.</p>
+    <p style="margin-top:10px"><a class="btn" style="display:inline-block;text-decoration:none" href="https://www.geogebra.org/m/urtsj49m" target="_blank" rel="noopener">GeoGebra öffnen ↗</a></p>
+   </div>
+   <img src="data:image/png;base64,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" alt="QR-Code zur GeoGebra-Aktivität">
+  </div>
+
+  <div class="tool">
+   <div class="txt">
+    <span class="tag teal">Bei Bedarf · freiwillig</span>
+    <h3>Vermutungen überprüfen</h3>
+    <p>Ihr habt eine Vermutung und möchtet sie mit weiteren Beispielen überprüfen?</p>
+   </div>
+   <button class="btn" type="button" id="tf-open" disabled>Tripel-Finder öffnen ↗</button>
+   <noscript><p class="note">Der Tripel-Finder funktioniert nur, wenn das Dashboard im Browser geöffnet wird.</p></noscript>
+  </div>
+ </div>
+</section>
+
+<section class="phase phase2">
+ <div class="phasebar"><span class="phase-no">PHASE 2</span><h2>Eine Vermutung begründen</h2><span class="date">Dienstag, 17.11.</span></div>
+ <div class="content">
+  <div class="start" style="border-left-color:#d99a32;background:#fff8ec">
+   <p><strong>So startet ihr:</strong></p>
+   <p>Schaut auf euer Placemat vom Freitag.<br>Wie wolltet ihr argumentieren?</p>
+  </div>
+  <div class="block"><p><strong>Ziel:</strong> Eine möglichst präzise Begründung entwickeln, die andere nachvollziehen können und die Pythagoras überzeugt.</p></div>
+ </div>
+</section>
+
+<div class="endnote">
+ <strong>HALTET EURE ERGEBNISSE FEST</strong>
+ <p>Dokumentiert eure Vermutung, passende Beispiele und eure Begründung auf eurem Plakat (hochkant!).</p>
+ <p>Alle Gruppenmitglieder sollen die gemeinsame Vermutung und Begründung verstehen und erklären können.<br>Schon fertig? Begründet ein zweites Muster.</p>
+</div>
+</section>
+
+<!-- ================= HILFEN ================= -->
+<section id="hilfen" class="tab-panel">
+
+<div class="helpintro">
+ <p><strong>Erst selbst denken – dann gezielt Hilfe nutzen – anschließend wieder selbstständig weiterarbeiten.</strong></p>
+ <p class="note" style="margin-top:4px">Öffnet nur, was euch gerade weiterhilft.<br>Notiert auf eurem Plakat, welche Hilfen ihr genutzt habt und wobei sie euch geholfen haben.</p>
+</div>
+
+<section class="phase">
+ <div class="phasebar" style="background:var(--teal);color:#fff"><span class="phase-no">ENTDECKEN</span><h2>Hilfe beim Entdecken und Untersuchen</h2></div>
+ <div class="content">
+  <details>
+   <summary>Was ist nochmal ein pythagoreisches Tripel?</summary>
+   <div class="detailbody">
+    <p>Drei natürliche Zahlen <em>a</em>, <em>b</em>, <em>c</em>, die die Gleichung</p>
+    <p class="mathline">a² + b² = c²</p>
+    <p>erfüllen, heißen pythagoreisches Tripel. <em>a</em> und <em>b</em> sind die Kathetenlängen, <em>c</em> ist die Hypotenusenlänge.</p>
+   </div>
+  </details>
+  <details>
+   <summary>Wie schreiben wir Tripel auf, damit wir sie gut vergleichen können?</summary>
+   <div class="detailbody">
+    <p>Es hilft, die drei Zahlen immer der Größe nach aufzuschreiben – die größte Zahl, die Hypotenuse, zuletzt:</p>
+    <p class="mathline">(3, 4, 5)</p>
+    <p>So steht bei allen Tripeln Gleiches an der gleichen Stelle, und ihr erkennt Muster leichter.</p>
+   </div>
+  </details>
+  <details>
+   <summary>Wie können wir unsere Ergebnisse übersichtlich festhalten?</summary>
+   <div class="detailbody">
+    <p>Eine Tabelle hilft euch, eure Ergebnisse zu ordnen und miteinander zu vergleichen.</p>
+    <table>
+     <thead><tr><th>Nr.</th><th>Tripel (a, b, c)</th><th>Probe</th></tr></thead>
+     <tbody>
+      <tr><td>1</td><td>(3, 4, 5)</td><td>9 + 16 = 25 ✓</td></tr>
+      <tr><td>2</td><td></td><td></td></tr>
+      <tr><td>3</td><td></td><td></td></tr>
+     </tbody>
+    </table>
+    <p class="note">Die Tabelle ist ein Vorschlag.<br>Ihr könnt eure Ergebnisse auch anders übersichtlich darstellen.</p>
+   </div>
+  </details>
+  <details>
+   <summary>Wir wissen nicht, wie wir weiterforschen sollen.</summary>
+   <div class="detailbody">
+    <ul>
+     <li>Welche Zahlen sind gerade, welche sind ungerade?</li>
+     <li>Haben eure Zahlen gemeinsame Teiler?</li>
+     <li>Welche Abstände gibt es zwischen den drei Zahlen?</li>
+     <li>Lassen sich eure Tripel in Gruppen sortieren, die zusammenpassen?</li>
+    </ul>
+   </div>
+  </details>
+  <details>
+   <summary>Wir brauchen Beispiele zum Vergleichen.</summary>
+   <div class="detailbody">
+    <p>Vergleicht die Tripel innerhalb einer Gruppe.<br>Was fällt euch auf?<br>Entdeckt ihr unterschiedliche Zusammenhänge?</p>
+    <div class="groups">
+     <div><strong>A</strong><span class="math">(3, 4, 5)<br>(6, 8, 10)</span></div>
+     <div><strong>B</strong><span class="math">(3, 4, 5)<br>(5, 12, 13)<br>(7, 24, 25)</span></div>
+     <div><strong>C</strong><span class="math">(8, 15, 17)<br>(12, 35, 37)<br>(16, 63, 65)</span></div>
+    </div>
+    <p class="note">Die Beispiele sind nur ein Ausgangspunkt.<br>Findet und untersucht auch eigene Tripel.</p>
+   </div>
+  </details>
+  <details>
+   <summary>Wie helfen uns die Quadratkärtchen?</summary>
+   <div class="detailbody">
+    <span class="ausliegen">Die Quadratkärtchen liegen im Klassenraum aus.</span>
+    <p>Welche Zusammenhänge zwischen Quadratzahlen könnt ihr nutzen, um eure Vermutung zu begründen?</p>
+   </div>
+  </details>
+  <details>
+   <summary>Wie helfen uns die Dreiecke?</summary>
+   <div class="detailbody">
+    <span class="ausliegen">Die ausgeschnittenen Dreiecke liegen im Klassenraum aus.</span>
+    <p>Nutzt die Dreiecke oder zeichnet Dreiecke zu euren gefundenen Tripeln – auf Papier oder digital.<br>Vergleicht Dreiecke, die zu unterschiedlichen Vermutungen gehören.</p>
+    <ul>
+     <li>Was verändert sich?</li>
+     <li>Was bleibt gleich?</li>
+     <li>Welche Zusammenhänge zwischen den Seitenlängen erkennt ihr?</li>
+    </ul>
+   </div>
+  </details>
+ </div>
+</section>
+
+<section class="phase">
+ <div class="phasebar" style="background:var(--gold);color:var(--navy)"><span class="phase-no">BEGRÜNDEN</span><h2>Hilfe beim Begründen</h2></div>
+ <div class="content">
+  <p class="supporting">Die Impulse sind gestuft.<br>Öffnet sie nacheinander – den nächsten erst, wenn ihr mit dem vorherigen nicht weiterkommt.</p>
+  <details>
+   <summary>Wir haben eine Vermutung, können sie aber noch nicht begründen.</summary>
+   <div class="detailbody">
+    <ul>
+     <li>Was genau behauptet ihr?<br>Könnt ihr eure Vermutung in einem Satz formulieren?</li>
+     <li>Gilt eure Vermutung nur für eure Beispiele – oder für alle passenden Zahlen?</li>
+     <li>Was bleibt bei euren Beispielen immer gleich, was verändert sich?</li>
+    </ul>
+   </div>
+  </details>
+  <details>
+   <summary>Wie ging nochmal die binomische Formel?</summary>
+   <div class="detailbody">
+    <p class="mathline">(a + b)² = a² + 2ab + b²</p>
+    <p class="note">Achtung: <span class="math">(a + b)²</span> ist nicht dasselbe wie <span class="math">a² + b²</span>.</p>
+   </div>
+  </details>
+
+  <details>
+   <summary>Unsere Tripel entstehen durch Verdoppeln oder Vervielfachen.</summary>
+   <div class="detailbody">
+    <details class="step"><summary>Impuls 1</summary><div class="detailbody">
+     <p>Zeichnet zu (3, 4, 5) und (6, 8, 10) die Quadrate an den Seiten.<br>Wie verändert sich die Fläche eines Quadrats, wenn seine Seite doppelt so lang wird?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 2</summary><div class="detailbody">
+     <p>Stellt euch ein Tripel vor, das ihr nicht kennt.<br>Klappt Verdoppeln auch dort?<br>Wie könnt ihr das zeigen, ohne die Zahlen zu kennen?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 3</summary><div class="detailbody">
+     <p>Muss es eigentlich Verdoppeln sein?</p>
+    </div></details>
+   </div>
+  </details>
+
+  <details>
+   <summary>Bei unseren Tripeln unterscheiden sich die beiden größten Zahlen um 1.</summary>
+   <div class="detailbody">
+    <details class="step"><summary>Impuls 1</summary><div class="detailbody">
+     <p>Legt die Quadratkärtchen 12² und 13² nebeneinander.<br>Wie groß ist der Unterschied?<br>Und bei 4² und 5²?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 2</summary><div class="detailbody">
+     <p>Findet ihr diese Unterschiede in euren Tripeln wieder?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 3</summary><div class="detailbody">
+     <p>Ist das Zufall – oder muss das so sein?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 4</summary><div class="detailbody">
+     <p>Wie geht es nach (7, 24, 25) weiter?</p>
+    </div></details>
+   </div>
+  </details>
+
+  <details>
+   <summary>Bei unseren Tripeln unterscheiden sich die beiden größten Zahlen um 2.</summary>
+   <div class="detailbody">
+    <details class="step"><summary>Impuls 1</summary><div class="detailbody">
+     <p>Legt die Quadratkärtchen 15² und 17² nebeneinander.<br>Wie groß ist der Unterschied?<br>Und bei 35² und 37²?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 2</summary><div class="detailbody">
+     <p>Findet ihr diese Unterschiede in euren Tripeln wieder?<br>Was fällt euch an der kleinsten Zahl auf?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 3</summary><div class="detailbody">
+     <p>Ist das Zufall – oder muss das so sein?</p>
+    </div></details>
+    <details class="step"><summary>Impuls 4</summary><div class="detailbody">
+     <p>Wie geht es nach (16, 63, 65) weiter?</p>
+    </div></details>
+   </div>
+  </details>
+
+  <details>
+   <summary>Wir kommen mit Variablen und Termen nicht weiter.</summary>
+   <div class="detailbody">
+    <ul>
+     <li>Welche Zahl könnt ihr durch eine Variable ersetzen?</li>
+     <li>Wie hängen die anderen Zahlen mit dieser Variablen zusammen?</li>
+     <li>Was müsst ihr zeigen, damit eure Aussage für alle passenden Zahlen gilt?</li>
+    </ul>
+   </div>
+  </details>
+ </div>
+</section>
+
+<section class="phase">
+ <div class="phasebar grey"><span class="phase-no">DARSTELLEN</span><h2>Eine Begründung verständlich visualisieren</h2></div>
+ <div class="content">
+  <details>
+   <summary>Wie können wir unsere Gedanken für andere sichtbar machen?</summary>
+   <div class="detailbody">
+    <ul>
+     <li><strong>Punktmuster:</strong> Ordnet Punkte so an, dass Zahlen oder Flächen sichtbar werden.</li>
+     <li><strong>Skizzen und Zeichnungen:</strong> Zeichnet Dreiecke, Quadrate oder ergänzt wichtige Strecken und Flächen.</li>
+     <li><strong>Tabellen:</strong> Ordnet Zahlen, Ergebnisse und Beobachtungen übersichtlich.</li>
+     <li><strong>Pfeile:</strong> Zeigt, welche Schritte zusammengehören oder wie ihr von einer Aussage zur nächsten gelangt.</li>
+     <li><strong>Farben und Markierungen:</strong> Hebt zusammengehörige Zahlen, Seiten, Flächen oder Terme hervor.</li>
+     <li><strong>Terme und Gleichungen:</strong> Macht sichtbar, wie ein allgemeiner Zusammenhang mathematisch beschrieben wird.</li>
+     <li><strong>Wort-Erklärungen:</strong> Ergänzt eure Darstellung durch kurze Sätze, damit klar wird, was sie zeigen soll.</li>
+    </ul>
+    <p>Fragt euch: Was soll jemand an eurer Darstellung erkennen?<br>Unterstützt sie eure Begründung wirklich?</p>
+   </div>
+  </details>
+ </div>
+</section>
+
+<section class="phase">
+ <div class="phasebar grey" style="background:#dfe7ee"><span class="phase-no">SPRACHE</span><h2>Mathematische Gedanken in Textform ausdrücken</h2></div>
+ <div class="content">
+  <details>
+   <summary>Wie formulieren wir eine Vermutung?</summary>
+   <div class="detailbody">
+    <ul>
+     <li>„Uns ist aufgefallen, dass …“</li>
+     <li>„An unseren Beispielen erkennen wir …“</li>
+     <li>„Unsere Vermutung lautet: …“</li>
+    </ul>
+   </div>
+  </details>
+  <details>
+   <summary>Wie argumentieren wir gemeinsam in der Gruppe?</summary>
+   <div class="detailbody">
+    <ul>
+     <li>„Ich sehe das ähnlich, weil …“</li>
+     <li>„Ich habe eine andere Idee: …“</li>
+     <li>„Könnte es auch sein, dass …?“</li>
+     <li>„Wir haben uns darauf geeinigt, dass …“</li>
+    </ul>
+   </div>
+  </details>
+  <details>
+   <summary>Wie schreiben wir eine Begründung verständlich auf?</summary>
+   <div class="detailbody">
+    <ul>
+     <li>„Für beliebige … gilt …“</li>
+     <li>„Daraus folgt, dass …“</li>
+     <li>„Die Darstellung zeigt, dass …“</li>
+     <li>„Damit ist erklärt, warum …“</li>
+    </ul>
+    <p><strong>Tipp:</strong> Erklärt nicht nur, was ihr gerechnet habt.<br>Macht deutlich, warum eure Schritte zeigen, dass der Zusammenhang immer gilt.</p>
+   </div>
+  </details>
+ </div>
+</section>
+</section>
+</main>
+<div id="tf-overlay" class="tf-overlay" hidden>
+ <div class="tf-window" role="dialog" aria-modal="true" aria-labelledby="tf-title">
+  <div class="tf-toolbar">
+   <strong>Tripel-Finder</strong>
+   <button type="button" class="tf-close" id="tf-close" aria-label="Tripel-Finder schließen">Schließen ✕</button>
+  </div>
+  <div class="tf-body">
+   <div class="tf-panel">
+    <h2 id="tf-title" class="tf-h">Pythagoreische Tripel finden</h2>
+    <p class="tf-intro">Welche ganzzahligen rechtwinkligen Dreiecke enthalten deine Zahl?<br>Gib eine Zahl ein und lege fest, welche Rolle sie im Dreieck spielt.</p>
+
+    <label class="tf-legend" for="tf-number">Deine Zahl</label>
+    <input id="tf-number" class="tf-input" type="number" min="1" step="1" inputmode="numeric" value="5">
+
+    <span class="tf-legend">Die Zahl ist …</span>
+    <div class="tf-choices">
+     <label class="tf-choice"><input type="checkbox" name="tf-role" value="leg"> eine Kathete</label>
+     <label class="tf-choice"><input type="checkbox" name="tf-role" value="hyp"> die Hypotenuse</label>
+    </div>
+
+    <label class="tf-legend" for="tf-hypothesis">Meine Vermutung (optional)</label>
+    <textarea id="tf-hypothesis" class="tf-textarea" placeholder="Welche Tripel erwartest du? Warum?"></textarea>
+
+    <button type="button" id="tf-search" class="tf-search">Tripel finden</button>
+    <div id="tf-feedback" class="tf-feedback" role="alert" aria-live="polite"></div>
+    <div id="tf-results" aria-live="polite"></div>
+
+    <div class="tf-note"><strong>Zur Erinnerung:</strong> In jedem pythagoreischen Tripel gilt <strong>a² + b² = c²</strong>.<br>Dabei sind a und b die Katheten und c ist die Hypotenuse.</div>
+   </div>
+  </div>
+ </div>
+</div>
+<style>
+.tf-overlay{position:fixed;inset:0;z-index:9999;background:rgba(18,31,49,.62);display:flex;align-items:center;justify-content:center;padding:18px}
+.tf-overlay[hidden]{display:none}
+.tf-window{width:min(820px,100%);max-height:94vh;background:#f5f7fb;border-radius:18px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 60px rgba(0,0,0,.28)}
+.tf-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:#f0f4f7;color:#24364a;border-bottom:1px solid #d9e1e8}
+.tf-close{border:0;border-radius:9px;padding:9px 13px;cursor:pointer;background:#e2eaf0;color:#344b60;font:inherit;font-weight:650}
+.tf-body{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:20px}
+.tf-panel{background:#fff;border:1px solid #d8e0ec;border-radius:18px;padding:clamp(18px,4vw,30px);color:#17233b}
+.tf-h{font-size:clamp(1.5rem,4vw,2rem);margin:0 0 8px}
+.tf-intro{color:#526078;margin:0 0 20px;line-height:1.5}
+.tf-legend{display:block;font-weight:700;margin:16px 0 8px}
+.tf-input{width:100%;padding:13px 15px;font:inherit;font-size:1.15rem;color:#17233b;background:#fff;border:1.5px solid #b9c6d8;border-radius:10px}
+.tf-textarea{width:100%;min-height:80px;resize:vertical;padding:12px 14px;font:inherit;color:#17233b;background:#f2faf3;border:1.5px solid #a9d7b2;border-radius:10px}
+.tf-choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tf-choice{display:flex;align-items:center;gap:10px;padding:13px;border:1.5px solid #d8e0ec;border-radius:11px;cursor:pointer}
+.tf-choice input{width:18px;height:18px;accent-color:#2457a6}
+.tf-choice.on{border-color:#2457a6;background:#eef4ff}
+.tf-search{margin-top:18px;width:100%;border:0;border-radius:11px;padding:14px 18px;background:#2457a6;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+.tf-feedback{margin-top:14px;color:#9b2c2c;min-height:1.2em}
+.tf-summary{font-weight:650;margin:16px 0 10px}
+.tf-list{display:grid;gap:10px}
+.tf-triple{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border:1px solid #d8e0ec;border-radius:11px;background:#fbfcff}
+.tf-triple.np{background:#fff1d6;border-color:#e7b85c}
+.tf-eq{font-size:1.1rem;font-weight:700}
+.tf-tag{white-space:nowrap;color:#526078;font-size:.83rem}
+.tf-egg{margin:10px 2px 0;font-size:.78rem;color:#8a96a8;font-style:italic}
+.tf-hyp{margin:0 0 12px;padding:12px 15px;border-radius:11px;background:#eaf7ed;border:1px solid #a9d7b2}
+.tf-hyp strong{display:block;margin-bottom:4px}
+.tf-hyp p{margin:0;white-space:pre-wrap}
+.tf-empty{padding:14px;border-radius:11px;background:#f4f6fa;color:#526078}
+.tf-note{margin-top:20px;padding:13px 16px;background:#f5f8fd;border-radius:11px;color:#526078;font-size:.92rem;line-height:1.55}
+@media(max-width:560px){.tf-overlay{padding:6px}.tf-body{padding:10px}.tf-choices{grid-template-columns:1fr}.tf-triple{flex-direction:column;align-items:flex-start;gap:4px}}
+</style>
+<script>
+(function(){
+  var overlay=document.getElementById('tf-overlay');
+  var openBtn=document.getElementById('tf-open');
+  var closeBtn=document.getElementById('tf-close');
+  var numberInput=document.getElementById('tf-number');
+  var feedback=document.getElementById('tf-feedback');
+  var results=document.getElementById('tf-results');
+  if(!overlay||!openBtn) return;
+
+  function gcd(a,b){while(b!==0){var t=b;b=a%b;a=t;}return a;}
+  function isqrt(n){var r=Math.floor(Math.sqrt(n));while(r*r>n)r--;while((r+1)*(r+1)<=n)r++;return r*r===n?r:null;}
+  function withLeg(n){
+    var out=[],sq=n*n;
+    for(var x=1;x*x<sq;x++){
+      if(sq%x!==0)continue;
+      var y=sq/x;
+      if((y-x)%2!==0)continue;
+      var b=(y-x)/2,c=(y+x)/2;
+      if(b>0)out.push([Math.min(n,b),Math.max(n,b),c]);
+    }
+    return out;
+  }
+  function withHyp(n){
+    var out=[];
+    for(var a=1;a<n;a++){var b=isqrt(n*n-a*a);if(b!==null&&a<=b)out.push([a,b,n]);}
+    return out;
+  }
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+
+  function show(){
+    feedback.textContent='';
+    results.innerHTML='';
+    var raw=String(numberInput.value).trim();
+    var n=Number(raw);
+    if(!raw||!isFinite(n)||n<1||Math.floor(n)!==n){feedback.textContent='Bitte gib eine positive ganze Zahl ein.';return;}
+    if(n>100000){feedback.textContent='Bitte verwende eine Zahl bis 100 000.';return;}
+
+    var hyp=document.getElementById('tf-hypothesis').value.trim();
+    if(hyp){var box=el('div','tf-hyp');box.appendChild(el('strong',null,'Deine Vermutung'));box.appendChild(el('p',null,hyp));results.appendChild(box);}
+
+    var boxes=document.querySelectorAll('input[name="tf-role"]');
+    var sel=[];for(var i=0;i<boxes.length;i++){if(boxes[i].checked)sel.push(boxes[i].value);}
+    var both=sel.length===0, roles=both?['leg','hyp']:sel;
+    var found={},keys=[];
+    roles.forEach(function(r){
+      (r==='leg'?withLeg(n):withHyp(n)).forEach(function(t){
+        var k=t.join(',');
+        if(!found[k]){found[k]={t:t,roles:[]};keys.push(k);}
+        if(found[k].roles.indexOf(r)<0)found[k].roles.push(r);
+      });
+    });
+    var list=keys.map(function(k){return found[k];}).sort(function(u,v){return u.t[0]-v.t[0]||u.t[1]-v.t[1]||u.t[2]-v.t[2];});
+    var desc=both?'als Kathete oder Hypotenuse':sel.map(function(r){return r==='leg'?'als Kathete':'als Hypotenuse';}).join(' und ');
+    results.appendChild(el('p','tf-summary',list.length?(list.length+(list.length===1?' passendes Tripel wurde':' passende Tripel wurden')+' gefunden ('+desc+'):'):'Es wurde kein passendes Tripel gefunden ('+desc+').'));
+    if(!list.length){results.appendChild(el('div','tf-empty','Die Zahl '+n+' kommt in keinem pythagoreischen Tripel '+desc+' vor.'));return;}
+
+    var wrap=el('div','tf-list'),colored=false;
+    list.forEach(function(item){
+      var a=item.t[0],b=item.t[1],c=item.t[2];
+      var np=gcd(gcd(a,b),c)>1; if(np)colored=true;
+      var row=el('div',np?'tf-triple np':'tf-triple');
+      row.appendChild(el('span','tf-eq',a+'² + '+b+'² = '+c+'²'));
+      var rt=item.roles.length===2?'Kathete und Hypotenuse':(item.roles[0]==='leg'?'Kathete':'Hypotenuse');
+      row.appendChild(el('span','tf-tag','('+a+' | '+b+' | '+c+') · Zahl als '+rt));
+      wrap.appendChild(row);
+    });
+    results.appendChild(wrap);
+    if(colored)results.appendChild(el('p','tf-egg','Manche Ergebnisse sind farbig hinterlegt. Woran könnte das liegen?'));
+  }
+
+  var choices=document.querySelectorAll('.tf-choice input');
+  for(var i=0;i<choices.length;i++){choices[i].addEventListener('change',function(){this.parentNode.classList.toggle('on',this.checked);});}
+
+  function open(){overlay.hidden=false;document.body.style.overflow='hidden';if(!results.hasChildNodes())show();numberInput.focus();}
+  function close(){overlay.hidden=true;document.body.style.overflow='';openBtn.focus();}
+  openBtn.addEventListener('click',open);
+  closeBtn.addEventListener('click',close);
+  overlay.addEventListener('click',function(e){if(e.target===overlay)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!overlay.hidden)close();});
+  document.getElementById('tf-search').addEventListener('click',show);
+  numberInput.addEventListener('keydown',function(e){if(e.key==='Enter')show();});
+  openBtn.disabled=false;
+})();
+</script>
+
+</body>
+</html>
